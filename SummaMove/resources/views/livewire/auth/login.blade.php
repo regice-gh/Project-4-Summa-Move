@@ -17,7 +17,7 @@
                 required
                 autofocus
                 autocomplete="email"
-                placeholder="email@example.com"
+                placeholder="email@school.com"
             />
 
             <!-- Password -->
@@ -28,7 +28,7 @@
                     type="password"
                     required
                     autocomplete="current-password"
-                    :placeholder="__('Password')"
+                    :placeholder="__('password')"
                     viewable
                 />
 

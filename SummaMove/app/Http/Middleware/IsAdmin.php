@@ -18,8 +18,7 @@ class IsAdmin
     {
         if (!Auth::check() || Auth::user()->role !== 'admin') {
         abort(403);
-    }
-
-    return $next($request);
+        }
+        return $next($request);
     }
 }

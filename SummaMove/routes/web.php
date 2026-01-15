@@ -8,7 +8,12 @@ use App\Http\Middleware\IsAdmin;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    // Redirect to dashboard if authenticated
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    } else {
+        return redirect()->route('login');
+    }
 })->name('home');
 
 Route::middleware(['auth'])->group(function () {
