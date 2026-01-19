@@ -8,10 +8,10 @@
             </div>
             
             <button 
-                wire:click="$toggle('showCreateForm')" 
+                wire:click="$toggle('showForm')" 
                 class="group relative inline-flex items-center justify-center px-6 py-2 text-sm font-medium text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 
-                @if($showCreateForm)
+                @if($showForm)
                     <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Annuleren
                 @else
@@ -23,22 +23,38 @@
 
         <div class="space-y-4 mb-6">
             @if (session()->has('message'))
-                <div class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50 border-l-4 border-green-500" role="alert">
+            <div x-data="{ show: true }" x-show="show" x-transition.duration.300ms
+                 class="flex items-center justify-between p-4 mb-4 text-green-800 rounded-lg bg-green-50 border-l-4 border-green-500" role="alert">
+                <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                     <span class="font-medium">{{ session('message') }}</span>
                 </div>
+
+                <button @click="show = false" type="button" class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
             @endif
 
             @if (session()->has('error'))
-                <div class="flex items-center p-4 mb-4 text-red-800 rounded-lg bg-red-50 border-l-4 border-red-500" role="alert">
+            <div x-data="{ show: true }" x-show="show" x-transition.duration.300ms
+                 class="flex items-center justify-between p-4 mb-4 text-red-800 rounded-lg bg-red-50 border-l-4 border-red-500" role="alert">
+                <div class="flex items-center">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                     <span class="font-medium">{{ session('error') }}</span>
                 </div>
+
+                <button @click="show = false" type="button" class="ml-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8" aria-label="Close">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
             @endif
         </div>
 
         <div 
-            x-data="{ show: @entangle('showCreateForm') }" 
+            x-data="{ show: @entangle('showForm') }" 
             x-show="show"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 transform -translate-y-2"
@@ -53,8 +69,8 @@
                 </h3>
                 <p class="text-sm text-gray-500">Vul de details in om een nieuwe oefening aan de database toe te voegen.</p>
             </div>
-            
-            <form wire:submit.prevent="createExercise">
+
+            <form wire:submit.prevent="{{$editingId ? 'updateExercise' : 'createExercise'}}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     
                     <div class="space-y-6">
@@ -113,7 +129,7 @@
                 </div>
 
                 <div class="mt-8 flex justify-end items-center border-t border-gray-100 pt-6">
-                    <div wire:loading wire:target="createExercise" class="mr-4 text-blue-600 flex items-center text-sm font-medium">
+                    <div wire:loading wire:target="{{$editingId ? 'updateExercise' : 'createExercise'}}" class="mr-4 text-blue-600 flex items-center text-sm font-medium">
                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         Bezig met opslaan...
                     </div>
@@ -188,8 +204,15 @@
                             wire:click="editExercise('{{ $exercise['id'] }}')"
                             @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
                             class="text-gray-400 hover:text-blue-600 transition-colors p-2 rounded-full hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            aria-label="Bewerk oefening">
+                            aria-label="Bewerk oefening" title="Bewerk oefening">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </button>
+
+                        <button 
+                            wire:click="viewExercise('{{ $exercise['id'] }}')"
+                            class="text-gray-400 hover:text-green-600 transition-colors p-2 rounded-full hover:bg-green-50"
+                            title="Bekijk details">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </button>
                         
                         <button 
@@ -197,7 +220,7 @@
                             wire:confirm="Weet je zeker dat je '{{ $exercise['name'] }}' wilt verwijderen? Dit kan niet ongedaan worden gemaakt."
                             wire:loading.attr="disabled"
                             class="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            aria-label="Verwijder oefening">
+                            aria-label="Verwijder oefening" title="Verwijder oefening">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </div>
@@ -210,5 +233,71 @@
                 </div>
             @endforelse
         </div>
+        @if($viewingExercise)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" 
+             x-data 
+             @keydown.escape.window="$wire.closeViewExercise()">
+
+            <div class="fixed inset-0 transparent bg-opacity-50 transition-opacity" 
+                 wire:click="closeViewExercise"></div>
+
+            <div class="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all p-8">
+
+                <button wire:click="closeViewExercise" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="space-y-6">
+
+                    <div class="border-b border-gray-100 pb-4">
+                        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">
+                            {{ $viewingExercise['name'] }}
+                        </h2>
+
+                        <div class="flex space-x-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                {{ $viewingExercise['category'] }}
+                            </span>
+
+                            @php
+                                $diffColor = match($viewingExercise['difficulty'] ?? '') {
+                                    'Beginner' => 'bg-green-100 text-green-800',
+                                    'Gemiddeld' => 'bg-yellow-100 text-yellow-800',
+                                    'Gevorderd' => 'bg-orange-100 text-orange-800',
+                                    'Expert' => 'bg-red-100 text-red-800',
+                                    default => 'bg-gray-100 text-gray-800',
+                                };
+                            @endphp
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $diffColor }}">
+                                {{ $viewingExercise['difficulty'] }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Beschrijving</h3>
+                            <p class="text-gray-700 leading-relaxed text-lg">
+                                {{ $viewingExercise['description'] }}
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Instructies</h3>
+                            <p class="text-gray-700 whitespace-pre-line leading-relaxed">
+                                {{ $viewingExercise['instructions'] ?? 'Geen instructies beschikbaar.' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 mt-6 border-t border-gray-100 text-xs text-gray-400 font-mono text-center">
+                        Exercise ID: {{ $viewingExercise['id'] }}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endif
     </div>
 </div>

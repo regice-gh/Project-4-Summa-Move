@@ -16,7 +16,8 @@ class AdminDashboard extends Component
     public $category = 'Kracht';
     public $difficulty = 'Beginner';
     
-    public $showCreateForm = false;
+    public $showForm = false;
+    public $viewingExercise = false;
     public $search = ''; 
     public $editingId = null;
 
@@ -67,7 +68,7 @@ class AdminDashboard extends Component
             ]);
 
         if ($response->successful()) {
-            $this->reset(['name', 'description', 'instructions', 'showCreateForm']);
+            $this->reset(['name', 'description', 'instructions', 'showForm']);
             $this->category = 'Kracht';
             $this->difficulty = 'Beginner';
             $this->refreshExercises();
@@ -89,15 +90,16 @@ class AdminDashboard extends Component
             $this->category = $exercise['category'];
             $this->difficulty = $exercise['difficulty'];
 
-            $this->showCreateForm = true;
+            $this->showForm = true;
         }
     }
 
     public function cancelForm()
     {
-        $this->reset(['name', 'description', 'instructions', 'editingId', 'showCreateForm']);
+        $this->reset(['name', 'description', 'instructions', 'editingId', 'showForm']);
         $this->category = 'Kracht';
         $this->difficulty = 'Beginner';
+        $this->editingId = null;
     }
 
     public function updateExercise()
@@ -108,7 +110,7 @@ class AdminDashboard extends Component
             'instructions' => 'required',
         ]);
 
-        $apiKey = env('SUMMA_API_KEY');
+        $apiKey = env('ADMIN_API_KEY');
 
         
         $response = Http::withoutVerifying()
@@ -141,6 +143,18 @@ class AdminDashboard extends Component
             $this->refreshExercises();
             session()->flash('message', 'Oefening verwijderd!');
         }
+    }
+    public function viewExercise($id)
+    {
+        $exercise = collect($this->allExercises)->firstWhere('id', $id);
+        
+        if ($exercise) {
+            $this->viewingExercise = $exercise;
+        }
+    }
+    public function closeViewExercise()
+    {
+        $this->viewingExercise = null;
     }
 
     public function render()
