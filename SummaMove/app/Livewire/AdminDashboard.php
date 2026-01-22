@@ -46,7 +46,7 @@ class AdminDashboard extends Component
             })
             ->all();
     }
-
+    //POST request
     public function createExercise()
     {
         $this->validate([
@@ -77,7 +77,7 @@ class AdminDashboard extends Component
             session()->flash('error', 'Fout: ' . $response->body());
         }
     }
-    //PUT request
+
     public function editExercise($id)
     {
         $exercise = collect($this->allExercises)->firstWhere('id', $id);
@@ -101,7 +101,7 @@ class AdminDashboard extends Component
         $this->difficulty = 'Beginner';
         $this->editingId = null;
     }
-
+    //PUT request
     public function updateExercise()
     {
         $this->validate([
@@ -131,7 +131,7 @@ class AdminDashboard extends Component
             session()->flash('error', 'Update mislukt: ' . $response->body());
         }
     }
-
+    //DELETE request
     public function deleteExercise($id)
     {
         $apiKey = env('ADMIN_API_KEY');
@@ -144,6 +144,7 @@ class AdminDashboard extends Component
             session()->flash('message', 'Oefening verwijderd!');
         }
     }
+
     public function viewExercise($id)
     {
         $exercise = collect($this->allExercises)->firstWhere('id', $id);
@@ -152,6 +153,7 @@ class AdminDashboard extends Component
             $this->viewingExercise = $exercise;
         }
     }
+
     public function closeViewExercise()
     {
         $this->viewingExercise = null;

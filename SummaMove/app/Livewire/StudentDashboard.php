@@ -17,7 +17,13 @@ class StudentDashboard extends Component
 
     public function mount()
     {
+        $this->refreshExercises();
+    }
+    
+    public function refreshExercises()
+    {
         $response = Http::withoutVerifying()->get('https://summa-move-api.vercel.app/api/exercises');
+        
         $this->allExercises = json_decode($response->body(), true) ?? [];
     }
 
